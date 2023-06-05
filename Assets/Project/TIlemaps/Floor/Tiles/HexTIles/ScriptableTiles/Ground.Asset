@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45935edf9e3045143bec5c5268d3d2d9, type: 3}
+  m_Name: Ground
+  m_EditorClassIdentifier: 
+  m_Sprite: {fileID: 21300000, guid: ac5213acb14eaaf46b489de926ff0645, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Transform:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
+  m_InstancedGameObject: {fileID: 0}
+  m_Flags: 1
+  m_ColliderType: 1
+  sprites:
+  - {fileID: 21300000, guid: 3988224a1f34d4c42953dd616bad8ebf, type: 3}
+  - {fileID: 21300000, guid: 3ae63f8b6e1a51842ac847eafe54acb5, type: 3}
+  - {fileID: 21300000, guid: 7e21a3b50e75ec543836c35adaf65af3, type: 3}
+  - {fileID: 21300000, guid: e79fabfb93efcb840928e73abfbf4a9f, type: 3}
+  - {fileID: 21300000, guid: ac5213acb14eaaf46b489de926ff0645, type: 3}
+  - {fileID: 21300000, guid: fa89e44388276404eac8dd947ea36c70, type: 3}
+  turnsRequired: 1
+  defenceAdd: 0
+  sightOffset: 0
