@@ -9,7 +9,6 @@ public class EntityBehaviour : NetworkBehaviour
     public enum events{
         onChangedTile
     }
-    
     private Observer<events> eventHandler;
     public Observer<events> EventHandler{
         get{
@@ -64,6 +63,7 @@ public class EntityBehaviour : NetworkBehaviour
     public int sightRadius;
     public int turnsPerRound;
     public int currentTurns;
+    public int affiliation;
 
     void OnMouseDown()
     {
@@ -91,20 +91,15 @@ public class EntityBehaviour : NetworkBehaviour
 
     [ClientRpc]
     void RpcSyncMovement(Vector2Int []path){
-        Debug.Log("responce");
         EntityWalker.RpcStartWalk(this,path);
     }
 
     [Command(requiresAuthority = false)]
-    void Movement(){
-        Debug.Log("command");
-        Vector3Int to = myTileMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+    void CmdMovement(Vector3Int to){
         Collider2D check = Physics2D.OverlapCircle(myTileMap.CellToWorld(to), 0.1f);
         if(check != null&&check.GetComponent<EntityBehaviour>()!=null) return;
         Vector2Int []path = HexManager.PathFind(tileCoord,(Vector2Int)to,myTileMap);
-        //(HexManager.IEPathFind(tileCoord,(Vector2Int)myTileMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition))));
         if(path != null) {
-            Debug.Log("path finded");
             RpcSyncMovement(path);
         }
     }
@@ -112,7 +107,7 @@ public class EntityBehaviour : NetworkBehaviour
     void Update()
     {
         if(Input.GetMouseButtonDown(0)&&IsChoosen){
-            Movement();
+            CmdMovement(myTileMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
         }
     }
     void Awake()
