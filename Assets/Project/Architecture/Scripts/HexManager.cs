@@ -69,12 +69,12 @@ public static class HexManager
     private static float HexDistance(Vector2Int a, Vector2Int b, Tilemap tilemap){
         return (tilemap.CellToWorld((Vector3Int)a) - tilemap.CellToWorld((Vector3Int)b)).magnitude;
     }
-    public static Vector2Int[]  PathFind(Vector2Int from, Vector2Int to, Tilemap tilemap){
+    public static Vector2Int[] PathFind(Vector2Int from, Vector2Int to, Tilemap tilemap){
         if(from == to) return null;
         List<graphPoint> openPoints = new List<graphPoint>();
         Dictionary<Vector2Int, Vector2Int> pathsToStart = new Dictionary<Vector2Int, Vector2Int>();
-        openPoints.Add(new graphPoint(from, 0, HexDistance(from, to, tilemap)));
-        pathsToStart.Add(from,from);
+        openPoints.Add(new graphPoint(to, 0, HexDistance(to, from, tilemap)));
+        pathsToStart.Add(to,to);
         bool isPathFinded = false;
         while(openPoints.Count>0&&!isPathFinded){
             graphPoint curPoint =  openPoints[0];
@@ -94,7 +94,7 @@ public static class HexManager
                 }
 
                 openPoints.Insert(insertedIndex, graphNeighbor);
-                if(neighbors[i] == to) {
+                if(neighbors[i] == from) {
                     isPathFinded = true;
                     break;
                 }
@@ -104,9 +104,9 @@ public static class HexManager
         if(!isPathFinded) return null;
 
         List<Vector2Int> result = new List<Vector2Int>();
-        result.Add(to);
-        while(result[0]!= from){
-            result.Insert(0,pathsToStart[result[0]]);
+        result.Add(from);
+        while(result[result.Count-1]!= to){
+            result.Add(pathsToStart[result[result.Count-1]]);
         }
         return result.ToArray();
     }
