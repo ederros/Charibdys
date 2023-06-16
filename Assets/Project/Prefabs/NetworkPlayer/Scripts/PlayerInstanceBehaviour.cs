@@ -7,29 +7,36 @@ public class PlayerInstanceBehaviour : NetworkBehaviour
 {
     
     public static PlayerInstanceBehaviour myInstance;
-    public static List<PlayerInstanceBehaviour> players;
     
-    
-    private void Awake() {
-        if(isServer){
-            int i;
-            for(i = 0; i<players.Count;i++){
-                
-            }
-            //players
+    [SyncVar][SerializeField]
+    private bool isMyTurn;
+    public bool IsMyTurn{
+        get{
+            return isMyTurn;
         }
+        set{
+            isMyTurn = value;
+        }
+    }
+
+    private void Awake() {
+        if(!isLocalPlayer) return;
     } 
-    
-    [Command]
-    void AddToServer(){
+
+    void OnDestroy()
+    {
         
     }
 
     void Start()
     {
-        if(!isLocalPlayer) return;
-        myInstance = this;
-        
+        if(isLocalPlayer) {
+            myInstance = this;
+        }
+        PlayersManager.Instance.AddPlayer(this);
+        if(isServer){
+            PlayersManager.Instance.NextTurn();
+        }
     }
     
     

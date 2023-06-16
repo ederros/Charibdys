@@ -15,6 +15,7 @@ public static class EntityWalker
         }
     }
     static IEnumerator WalkOnPath(EntityBehaviour myEntity, Vector2Int[] path){
+        EntityBehaviour.walkingEntity = myEntity;
         foreach(Vector2Int v in path){
             myEntity.TileCoord = v;
             myEntity.transform.position = myEntity.myTileMap.CellToWorld((Vector3Int)myEntity.TileCoord);
@@ -23,6 +24,7 @@ public static class EntityWalker
         }
         EventListener.Notify(events.OnWalkerReach);
         isWalking = false;
+        EntityBehaviour.walkingEntity = null;
 
     }
     static bool isWalking = false;
@@ -31,7 +33,6 @@ public static class EntityWalker
             return isWalking;
         }
     }
-    
     static public bool RpcStartWalk(EntityBehaviour myEntity, Vector2Int []path){
         if(isWalking == true) return false;
         isWalking = true;

@@ -9,11 +9,16 @@ public class EntityBehaviour : NetworkBehaviour
     public enum events{
         onChangedTile
     }
-    private Observer<events> eventHandler;
-    public Observer<events> EventHandler{
+    [SerializeField]
+    public Color selectedColor;
+
+    [HideInInspector]
+    public Color unselectColor;
+    private Observer<events> entityEventListener;
+    public Observer<events> EntityEventListener{
         get{
-            if(eventHandler == null) eventHandler = new Observer<events>();
-            return eventHandler;
+            if(entityEventListener == null) entityEventListener = new Observer<events>();
+            return entityEventListener;
         }
     }
     static EntityBehaviour choosen = null;
@@ -35,6 +40,8 @@ public class EntityBehaviour : NetworkBehaviour
     
     [SerializeField]
     GameValue hp = new GameValue(100);
+
+    public static EntityBehaviour walkingEntity = null;
 
     public Tilemap myTileMap;
     private Vector2Int tileCoord = Vector2Int.zero;
@@ -67,26 +74,19 @@ public class EntityBehaviour : NetworkBehaviour
 
     void OnMouseDown()
     {
-       Choosen = this;
+        PlayerInstanceBehaviour player = PlayersManager.Instance.GetPlayer(affiliation);
+        if(player!=null&&player.isLocalPlayer)
+            Choosen = this;
     }
     private static void OnChoose(){
         SpriteRenderer sr = choosen.GetComponent<SpriteRenderer>();
-        sr.color = Color.blue;
+        sr.color = choosen.selectedColor;
         sr.sortingOrder++;
     }
     private static void OnUnChoose(){
         SpriteRenderer sr = choosen.GetComponent<SpriteRenderer>();
-        sr.color = Color.white;
+        sr.color = choosen.unselectColor;
         sr.sortingOrder--;
-    }
-
-    public bool Move(int direction){
-        return Move(HexManager.DirToVec2(tileCoord.y,direction));
-    }
-    public bool Move(Vector2Int direction){
-        tileCoord+=direction;
-        transform.position=myTileMap.CellToWorld((Vector3Int)tileCoord);
-        return true;
     }
 
     [ClientRpc]
@@ -96,9 +96,7 @@ public class EntityBehaviour : NetworkBehaviour
 
     [Command(requiresAuthority = false)]
     void CmdMovement(Vector3Int to){
-        Collider2D check = Physics2D.OverlapCircle(myTileMap.CellToWorld(to), 0.1f);
-        if(check != null&&check.GetComponent<EntityBehaviour>()!=null) return;
-        Vector2Int []path = HexManager.PathFind(tileCoord,(Vector2Int)to,myTileMap);
+        Vector2Int []path = HexManager.pathFinder.PathFind(tileCoord,(Vector2Int)to,myTileMap);
         if(path != null) {
             RpcSyncMovement(path);
         }
@@ -106,7 +104,7 @@ public class EntityBehaviour : NetworkBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(0)&&IsChoosen){
+        if(Input.GetMouseButtonDown(0)&&IsChoosen&&PlayerInstanceBehaviour.myInstance.IsMyTurn){
             CmdMovement(myTileMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
         }
     }
@@ -114,5 +112,6 @@ public class EntityBehaviour : NetworkBehaviour
     {
         TileCoord = (Vector2Int)(myTileMap.WorldToCell(transform.position));
         transform.position = myTileMap.CellToWorld((Vector3Int)TileCoord);
+        unselectColor = GetComponent<SpriteRenderer>().color;
     }
 }
