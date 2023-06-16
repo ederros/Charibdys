@@ -106,8 +106,8 @@ MonoBehaviour:
   myTileMap: {fileID: 0}
   armor: 0
   sightRadius: 0
-  turnsPerRound: 0
-  currentTurns: 0
+  turnsPerRound: 10
+  currentTurns: 10
   affiliation: 0
 --- !u!61 &7408839301984071387
 BoxCollider2D:

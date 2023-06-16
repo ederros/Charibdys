@@ -68,7 +68,11 @@ public class EntityBehaviour : NetworkBehaviour
     }
     public float armor;
     public int sightRadius;
+
+    [SyncVar]
     public int turnsPerRound;
+
+    [SyncVar]
     public int currentTurns;
     public int affiliation;
 
@@ -105,7 +109,10 @@ public class EntityBehaviour : NetworkBehaviour
     void Update()
     {
         if(Input.GetMouseButtonDown(0)&&IsChoosen&&PlayerInstanceBehaviour.myInstance.IsMyTurn){
-            CmdMovement(myTileMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
+            if(CursorController.path==null) return;
+
+            CmdMovement((Vector3Int)CursorController.path[CursorController.path.Length-1]);
+
         }
     }
     void Awake()

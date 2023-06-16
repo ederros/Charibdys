@@ -17,6 +17,7 @@ public abstract class PathFinder
         return costs.ToArray();
     }
 
+    
 
     public Vector2Int[] TrimPathByCost(Vector2Int[] path, float[] costs, float maxCost){
         int i;
