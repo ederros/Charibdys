@@ -14,9 +14,10 @@ public class CursorController : MonoBehaviour, ISubscribeable<EntityWalker.event
     void BuildPathToCursor(Vector2Int from){
         Vector2Int to = (Vector2Int)tMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         Vector2Int[] path = HexManager.pathFinder.PathFind(from, to, tMap);
+        if(path == null) return;
+        
         float [] costs = HexManager.pathFinder.PathCosts(path, tMap);
         Vector2Int[] truePath = HexManager.pathFinder.TrimPathByCost(path, costs, EntityBehaviour.Choosen.currentTurns);
-        if(path == null) return;
         for(int i = 1;i<path.Length;i++){
             Instantiate(PathPoint, tMap.CellToWorld((Vector3Int)path[i]),Quaternion.identity,pathPointsContainer);
         }

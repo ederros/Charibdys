@@ -13,7 +13,7 @@ public abstract class PathFinder
             totalCost += Tmap.GetTile<FloorTile>((Vector3Int)path[i]).turnsRequired;
             costs.Add(totalCost);
         }
-
+        
         return costs.ToArray();
     }
 
