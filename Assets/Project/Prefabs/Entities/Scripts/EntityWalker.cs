@@ -1,31 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Mirror;
 public static class EntityWalker
 {
-    public enum events{
-        OnWalkerReach,
-        OnWalkerStep
-    }
-    static Observer<events> eventListener = new Observer<events>();
-    static public Observer<events> EventListener{
-        get{
-            return eventListener;
-        }
-    }
+    public static UnityEvent OnWalkerReach = new UnityEvent();
+    public static UnityEvent OnWalkerStep = new UnityEvent();
     static IEnumerator WalkOnPath(EntityBehaviour myEntity, Vector2Int[] path){
         EntityBehaviour.walkingEntity = myEntity;
         foreach(Vector2Int v in path){
             myEntity.TileCoord = v;
             myEntity.transform.position = myEntity.myTileMap.CellToWorld((Vector3Int)myEntity.TileCoord);
-            EventListener.Notify(events.OnWalkerStep);
+            
+            OnWalkerStep.Invoke();
             yield return new WaitForSeconds(0.2f);
         }
-        EventListener.Notify(events.OnWalkerReach);
+        OnWalkerReach.Invoke();
         isWalking = false;
         EntityBehaviour.walkingEntity = null;
-
     }
     static bool isWalking = false;
     static public bool IsWalking{
@@ -38,5 +31,6 @@ public static class EntityWalker
         isWalking = true;
         myEntity.StartCoroutine(WalkOnPath(myEntity, path));
         return true;
+        
     }
 }

@@ -17,6 +17,7 @@ public class PlayersManager : NetworkBehaviour
     
     [Command(requiresAuthority = false)]
     public void NextTurn(){
+        EntityBehaviour.RefreshTurns();
         players[playerTurn].IsMyTurn = false;
         playerTurn ++;
         playerTurn %= players.Count;

@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.Events;
 
-public class CursorController : MonoBehaviour, ISubscribeable<EntityWalker.events>
+public class CursorController : MonoBehaviour
 {
 
+
+    [SerializeField]
+    UnityEvent OnNewTile;
     [SerializeField]
     Transform pathPointsContainer;
     [SerializeField]
@@ -15,6 +19,10 @@ public class CursorController : MonoBehaviour, ISubscribeable<EntityWalker.event
     GameObject falsePathPoint;
 
     public static Vector2Int[] path {
+        get;
+        private set;
+    }
+    public static float [] costs {
         get;
         private set;
     }
@@ -28,8 +36,8 @@ public class CursorController : MonoBehaviour, ISubscribeable<EntityWalker.event
             return;
         }
 
-        float [] costs = HexManager.pathFinder.PathCosts(path, tMap);
-        Vector2Int[] truePath = HexManager.pathFinder.TrimPathByCost(path, costs, EntityBehaviour.Choosen.currentTurns);
+        costs = HexManager.pathFinder.PathCosts(path, tMap);
+        Vector2Int[] truePath = HexManager.pathFinder.TrimPathByCost(path, costs, EntityBehaviour.Choosen.CurrentTurns);
         int i;
         CursorController.path = truePath;
         for(i = 1;i<truePath.Length;i++){
@@ -54,26 +62,31 @@ public class CursorController : MonoBehaviour, ISubscribeable<EntityWalker.event
         DestroyChilds();
         BuildPathToCursor(EntityBehaviour.Choosen.TileCoord);
         lastTile = (Vector2Int)tMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        
+        OnNewTile.Invoke();
 
     }
 
 
     bool isFirstStep = true;
-    public void ReceiveEvent(EntityWalker.events ev)
-    {
-        if(ev == EntityWalker.events.OnWalkerReach&&PlayersManager.Instance.GetPlayer(EntityBehaviour.walkingEntity.affiliation)==PlayerInstanceBehaviour.myInstance){
-            DestroyChilds();
-            isFirstStep = true;
-        }
-        if(ev == EntityWalker.events.OnWalkerStep&&PlayersManager.Instance.GetPlayer(EntityBehaviour.walkingEntity.affiliation)==PlayerInstanceBehaviour.myInstance){
-            if(isFirstStep) isFirstStep = false;
-            else Destroy(pathPointsContainer.GetChild(0).gameObject);
+
+    void OnWalkerReach(){
+        if(!EntityBehaviour.walkingEntity.CheckAffiliation()) return;
+        DestroyChilds();
+        isFirstStep = true;
+    }
+
+    void OnWalkerStep(){
+        if(!EntityBehaviour.walkingEntity.CheckAffiliation()) return;
+        if(isFirstStep) isFirstStep = false;
+        else{ 
+            EntityBehaviour.walkingEntity.TrySpendTurns(EntityBehaviour.walkingEntity.myTileMap.GetTile<FloorTile>((Vector3Int)EntityBehaviour.walkingEntity.TileCoord).turnsRequired);
+            Destroy(pathPointsContainer.GetChild(0).gameObject);
         }
     }
+
     void Awake()
     {
-        EntityWalker.EventListener.Subscribe(EntityWalker.events.OnWalkerReach,this);
-        EntityWalker.EventListener.Subscribe(EntityWalker.events.OnWalkerStep,this);
+        EntityWalker.OnWalkerReach.AddListener(OnWalkerReach);
+        EntityWalker.OnWalkerStep.AddListener(OnWalkerStep);
     }
 }

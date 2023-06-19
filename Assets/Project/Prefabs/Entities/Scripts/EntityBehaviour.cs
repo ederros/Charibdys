@@ -6,21 +6,13 @@ using Mirror;
 
 public class EntityBehaviour : NetworkBehaviour
 {
-    public enum events{
-        onChangedTile
-    }
+
+
     [SerializeField]
     public Color selectedColor;
 
     [HideInInspector]
     public Color unselectColor;
-    private Observer<events> entityEventListener;
-    public Observer<events> EntityEventListener{
-        get{
-            if(entityEventListener == null) entityEventListener = new Observer<events>();
-            return entityEventListener;
-        }
-    }
     static EntityBehaviour choosen = null;
     public static EntityBehaviour Choosen{
         get{
@@ -70,11 +62,34 @@ public class EntityBehaviour : NetworkBehaviour
     public int sightRadius;
 
     [SyncVar]
-    public int turnsPerRound;
+    public uint turnsPerRound;
 
-    [SyncVar]
-    public int currentTurns;
+    [SyncVar][SerializeField]
+    uint currentTurns;
+
+    public uint CurrentTurns{
+        get{
+            return currentTurns;
+        }
+    }
+    public bool TrySpendTurns(uint turnsToSpend){
+        if(turnsToSpend>currentTurns) return false;
+        currentTurns-=turnsToSpend;
+        
+        return true;
+    }
     public int affiliation;
+
+    private static List<EntityBehaviour> allEntities = new List<EntityBehaviour>();
+    public static void RefreshTurns(){
+        foreach(EntityBehaviour e in allEntities){
+            if(e.CheckAffiliation())
+                e.currentTurns = e.turnsPerRound;
+        }
+    }
+
+    public bool CheckAffiliation() => PlayersManager.Instance.GetPlayer(affiliation)==PlayerInstanceBehaviour.myInstance; // returns true if this unit affiliates to local player 
+
 
     void OnMouseDown()
     {
@@ -115,10 +130,15 @@ public class EntityBehaviour : NetworkBehaviour
 
         }
     }
+    void OnDestroy()
+    {
+        allEntities.Remove(this);
+    }
     void Awake()
     {
         TileCoord = (Vector2Int)(myTileMap.WorldToCell(transform.position));
         transform.position = myTileMap.CellToWorld((Vector3Int)TileCoord);
         unselectColor = GetComponent<SpriteRenderer>().color;
+        allEntities.Add(this);
     }
 }
