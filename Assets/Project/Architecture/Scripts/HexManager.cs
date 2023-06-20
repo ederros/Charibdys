@@ -38,10 +38,11 @@ public static class HexManager
         return secondDirs.IndexOf(direction);
     }
     
-    public static EntityBehaviour CheckForEntity(Tilemap tilemap, Vector3Int cell){
-        Collider2D check = Physics2D.OverlapCircle(tilemap.CellToWorld(cell), 0.1f);
+    public static T CheckFor<T>(Tilemap tilemap, Vector2Int cell) where T:Component
+    {
+        Collider2D check = Physics2D.OverlapCircle(tilemap.CellToWorld((Vector3Int)cell), 0.1f);
         if(check == null) return null;
-        return check.GetComponent<EntityBehaviour>();
+        return check.GetComponent<T>();
     }
     
 }

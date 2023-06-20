@@ -17,8 +17,6 @@ public abstract class PathFinder
         return costs.ToArray();
     }
 
-    
-
     public Vector2Int[] TrimPathByCost(Vector2Int[] path, float[] costs, float maxCost){
         int i;
         List<Vector2Int> newPath = new List<Vector2Int>();
@@ -53,7 +51,7 @@ public abstract class PathFinder
     public Vector2Int[] PathFind(Vector2Int from, Vector2Int to, Tilemap tilemap){//A* method
         if(from == to) return null;
         if(tilemap.GetTile<FloorTile>((Vector3Int)to) == null) return null;
-        if(HexManager.CheckForEntity(tilemap,(Vector3Int)to)!=null) return null;
+        if(HexManager.CheckFor<EntityBehaviour>(tilemap,to)!=null) return null;
         List<graphPoint> openPoints = new List<graphPoint>();
         Dictionary<Vector2Int, Vector2Int> pathsToStart = new Dictionary<Vector2Int, Vector2Int>();
         openPoints.Add(new graphPoint(to, 0, HexDistance(to, from, tilemap)));

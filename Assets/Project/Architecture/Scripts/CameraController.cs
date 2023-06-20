@@ -6,6 +6,15 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     private Camera myCam;
+
+    [SerializeField]
+    private float scaleSpeed;
+
+    [SerializeField]
+    private float minSize;
+
+    [SerializeField]
+    private float maxSize;
     private Vector2 lastMousePos;
 
     void Awake()
@@ -13,9 +22,8 @@ public class CameraController : MonoBehaviour
         myCam = GetComponent<Camera>();
     }
 
-    void Update()
-    {
-        if(Input.GetMouseButtonDown(2)){
+    void CameraMove(){
+         if(Input.GetMouseButtonDown(2)){
             lastMousePos = myCam.ScreenToWorldPoint(Input.mousePosition);
         }
         if(Input.GetMouseButton(2)){
@@ -23,5 +31,17 @@ public class CameraController : MonoBehaviour
             lastMousePos = (Vector2)myCam.ScreenToWorldPoint(Input.mousePosition) + deltaPos;
             transform.position += (Vector3)deltaPos;
         }
+    }
+    void CameraResize(){
+        if(Input.mouseScrollDelta.y!=0){
+            myCam.orthographicSize -= Input.mouseScrollDelta.y*myCam.orthographicSize*scaleSpeed;
+            myCam.orthographicSize = Mathf.Clamp( myCam.orthographicSize,minSize,maxSize);
+        }
+    }
+
+    void Update()
+    {
+       CameraMove();
+       CameraResize();
     }
 }

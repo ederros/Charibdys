@@ -1,24 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [System.Serializable]
-public class GameValue : MonoBehaviour
+public class GameValue
 {
-    enum events{
-        OnValueChanged
-    }
-
     [SerializeField]
-    public float value{get; private set;}
+    private float value;
+    public float Value{get; private set;}
     public float maxValue{get; private set;}
     public float minValue{get; private set;}
-
+    public UnityEvent OnValueChanged;
     public GameValue(float value){
         this.value = value;
         maxValue = value;
         minValue = 0;
     }
 
+    public void AddValue(float addVal){
+        value+=addVal;
+        if(value>maxValue)
+            value = maxValue;
+        OnValueChanged.Invoke();
+    }
+
+    public void SubValue(float addVal){
+        value-=addVal;
+        if(value<=minValue)
+            value = maxValue;
+
+        OnValueChanged.Invoke();
+    }
     
 }

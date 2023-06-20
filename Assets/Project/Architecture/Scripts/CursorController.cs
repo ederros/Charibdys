@@ -43,6 +43,7 @@ public class CursorController : MonoBehaviour
         for(i = 1;i<truePath.Length;i++){
             Instantiate(truePathPoint, tMap.CellToWorld((Vector3Int)path[i]),Quaternion.identity,pathPointsContainer);
         }
+
         for(;i<path.Length;i++){
             Instantiate(falsePathPoint, tMap.CellToWorld((Vector3Int)path[i]),Quaternion.identity,pathPointsContainer);
         }
@@ -66,20 +67,20 @@ public class CursorController : MonoBehaviour
 
     }
 
-
     bool isFirstStep = true;
 
     void OnWalkerReach(){
-        if(!EntityBehaviour.walkingEntity.CheckAffiliation()) return;
+        if(!EntityWalker.walkingEntity.CheckAffiliation()) return;
         DestroyChilds();
         isFirstStep = true;
     }
 
     void OnWalkerStep(){
-        if(!EntityBehaviour.walkingEntity.CheckAffiliation()) return;
+        if(!EntityWalker.walkingEntity.CheckAffiliation()) return;
         if(isFirstStep) isFirstStep = false;
         else{ 
-            EntityBehaviour.walkingEntity.TrySpendTurns(EntityBehaviour.walkingEntity.myTileMap.GetTile<FloorTile>((Vector3Int)EntityBehaviour.walkingEntity.TileCoord).turnsRequired);
+            EntityBehaviour tempEnt = EntityWalker.walkingEntity;
+            tempEnt.TrySpendTurns(tempEnt.myTileMap.GetTile<FloorTile>((Vector3Int)tempEnt.TileCoord).turnsRequired);
             Destroy(pathPointsContainer.GetChild(0).gameObject);
         }
     }

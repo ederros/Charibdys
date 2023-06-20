@@ -30,13 +30,11 @@ public class EntityBehaviour : NetworkBehaviour
         }
     }
     
-    [SerializeField]
-    GameValue hp = new GameValue(100);
-
-    public static EntityBehaviour walkingEntity = null;
+    [SerializeReference]
+    public GameValue hp = new GameValue(100);
 
     public Tilemap myTileMap;
-    private Vector2Int tileCoord = Vector2Int.zero;
+    protected Vector2Int tileCoord = Vector2Int.zero;
     public Vector2Int TileCoord{
         get{
             return tileCoord;
@@ -61,6 +59,9 @@ public class EntityBehaviour : NetworkBehaviour
     public float armor;
     public int sightRadius;
 
+        public int affiliation;
+
+    private static List<EntityBehaviour> allEntities = new List<EntityBehaviour>();
     [SyncVar]
     public uint turnsPerRound;
 
@@ -78,9 +79,6 @@ public class EntityBehaviour : NetworkBehaviour
         
         return true;
     }
-    public int affiliation;
-
-    private static List<EntityBehaviour> allEntities = new List<EntityBehaviour>();
     public static void RefreshTurns(){
         foreach(EntityBehaviour e in allEntities){
             if(e.CheckAffiliation())
@@ -90,12 +88,15 @@ public class EntityBehaviour : NetworkBehaviour
 
     public bool CheckAffiliation() => PlayersManager.Instance.GetPlayer(affiliation)==PlayerInstanceBehaviour.myInstance; // returns true if this unit affiliates to local player 
 
-
-    void OnMouseDown()
-    {
+    void TryChoose(){
         PlayerInstanceBehaviour player = PlayersManager.Instance.GetPlayer(affiliation);
         if(player!=null&&player.isLocalPlayer)
             Choosen = this;
+    }
+
+    void OnMouseDown()
+    {
+        TryChoose();
     }
     private static void OnChoose(){
         SpriteRenderer sr = choosen.GetComponent<SpriteRenderer>();
@@ -108,28 +109,7 @@ public class EntityBehaviour : NetworkBehaviour
         sr.sortingOrder--;
     }
 
-    [ClientRpc]
-    void RpcSyncMovement(Vector2Int []path){
-        EntityWalker.RpcStartWalk(this,path);
-    }
-
-    [Command(requiresAuthority = false)]
-    void CmdMovement(Vector3Int to){
-        Vector2Int []path = HexManager.pathFinder.PathFind(tileCoord,(Vector2Int)to,myTileMap);
-        if(path != null) {
-            RpcSyncMovement(path);
-        }
-    }
-
-    void Update()
-    {
-        if(Input.GetMouseButtonDown(0)&&IsChoosen&&PlayerInstanceBehaviour.myInstance.IsMyTurn){
-            if(CursorController.path==null) return;
-
-            CmdMovement((Vector3Int)CursorController.path[CursorController.path.Length-1]);
-
-        }
-    }
+    
     void OnDestroy()
     {
         allEntities.Remove(this);
