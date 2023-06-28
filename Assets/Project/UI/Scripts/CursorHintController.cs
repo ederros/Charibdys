@@ -10,7 +10,7 @@ public class CursorHintController : MonoBehaviour
     [SerializeField]
     Text hint;
     public void OnTileChanged(){
-        if(CursorController.path == null){
+        if(CursorController.cmdSequence == null){
             hint.text = "";
             return;
         }

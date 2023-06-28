@@ -143,16 +143,18 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  selectedColor: {r: 0, g: 0, b: 0, a: 0}
+  attack: {fileID: 0}
+  selectedColor: {r: 0.735849, g: 0, b: 0.64268684, a: 1}
   unselectColor: {r: 0, g: 0, b: 0, a: 0}
   hp:
     id: 0
   myTileMap: {fileID: 0}
+  tileCoord: {x: 0, y: 0}
   armor: 0
   sightRadius: 0
-  affiliation: 0
-  turnsPerRound: 0
-  currentTurns: 0
+  affiliation: 1
+  turnsPerRound: 10
+  currentTurns: 10
   references:
     version: 1
     00000000:
@@ -162,3 +164,21 @@ MonoBehaviour:
         OnValueChanged:
           m_PersistentCalls:
             m_Calls: []
+        OnValueMax:
+          m_PersistentCalls:
+            m_Calls: []
+        OnValueMin:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 2459991210400832761}
+              m_TargetAssemblyTypeName: EntityBehaviour, Assembly-CSharp
+              m_MethodName: Die
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2

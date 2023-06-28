@@ -5,28 +5,26 @@ using UnityEngine.Tilemaps;
 public abstract class PathFinder
 {
     
-    public float[] PathCosts(Vector2Int []path, Tilemap Tmap){
+    public float[] PathCosts(EntityCommand []sequence, Tilemap Tmap){
         List<float> costs = new List<float>();
         float totalCost = 0;
-        costs.Add(0);
-        for(int i = 1;i<path.Length;i++){
-            totalCost += Tmap.GetTile<FloorTile>((Vector3Int)path[i]).turnsRequired;
+        for(int i = 0;i<sequence.Length;i++){
+            totalCost += sequence[i].GetCost();
             costs.Add(totalCost);
         }
         
         return costs.ToArray();
     }
 
-    public Vector2Int[] TrimPathByCost(Vector2Int[] path, float[] costs, float maxCost){
+    public T[] TrimSequenceByCost<T>(T [] sequence, float[] costs, float maxCost){ 
         int i;
-        List<Vector2Int> newPath = new List<Vector2Int>();
-        for(i = 0;i < path.Length;i++){
+        List<T> newPath = new List<T>();
+        for(i = 0;i < sequence.Length;i++){
             if(costs[i]>maxCost) break;
-            newPath.Add(path[i]);
+            newPath.Add(sequence[i]);
         }
         return newPath.ToArray();
     }
-    
     public abstract Vector2Int[] GetNeighbors(Vector2Int tileCord);
     struct graphPoint{
         public Vector2Int coord;
@@ -44,14 +42,26 @@ public abstract class PathFinder
              this.distanceToEnd = distance;
         }
     }
-
+    public static List<EntityCommand> PathToCommands(Vector2Int[] path, EntityBehaviour entity){
+        List<EntityCommand> cmdPath = new List<EntityCommand>();
+        foreach (Vector2Int move in path)
+        {
+            cmdPath.Add(new MoveCommand(entity, move));
+        }
+        EntityBehaviour tempEntity = HexManager.CheckFor<UnitController>(entity.myTileMap,path[path.Length-1]);
+        if(tempEntity!=null&&!tempEntity.CheckAffiliation()){
+            cmdPath[path.Length-1] = new AttackCommand(entity, path[path.Length-1],entity.myTileMap);
+        }
+        return cmdPath;
+    }
     private static float HexDistance(Vector2Int a, Vector2Int b, Tilemap tilemap){
         return (tilemap.CellToWorld((Vector3Int)a) - tilemap.CellToWorld((Vector3Int)b)).magnitude;
     }
     public Vector2Int[] PathFind(Vector2Int from, Vector2Int to, Tilemap tilemap){//A* method
         if(from == to) return null;
         if(tilemap.GetTile<FloorTile>((Vector3Int)to) == null) return null;
-        if(HexManager.CheckFor<EntityBehaviour>(tilemap,to)!=null) return null;
+        EntityBehaviour endEntity = HexManager.CheckFor<EntityBehaviour>(tilemap,to);
+        if(endEntity!=null&&endEntity.CheckAffiliation()) return null;
         List<graphPoint> openPoints = new List<graphPoint>();
         Dictionary<Vector2Int, Vector2Int> pathsToStart = new Dictionary<Vector2Int, Vector2Int>();
         openPoints.Add(new graphPoint(to, 0, HexDistance(to, from, tilemap)));
@@ -86,6 +96,7 @@ public abstract class PathFinder
 
         List<Vector2Int> result = new List<Vector2Int>();
         result.Add(from);
+        result[0] = (pathsToStart[result[result.Count-1]]);
         while(result[result.Count-1]!= to){
             result.Add(pathsToStart[result[result.Count-1]]);
         }

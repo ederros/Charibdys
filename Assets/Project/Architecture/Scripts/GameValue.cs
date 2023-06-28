@@ -12,6 +12,8 @@ public class GameValue
     public float maxValue{get; private set;}
     public float minValue{get; private set;}
     public UnityEvent OnValueChanged;
+    public UnityEvent OnValueMax;
+    public UnityEvent OnValueMin;
     public GameValue(float value){
         this.value = value;
         maxValue = value;
@@ -20,15 +22,21 @@ public class GameValue
 
     public void AddValue(float addVal){
         value+=addVal;
-        if(value>maxValue)
+        if(value>maxValue){
             value = maxValue;
+            OnValueMax.Invoke();
+        }
+            
         OnValueChanged.Invoke();
     }
 
     public void SubValue(float addVal){
         value-=addVal;
-        if(value<=minValue)
+        if(value<=minValue){
             value = maxValue;
+            OnValueMin.Invoke();
+        }
+            
 
         OnValueChanged.Invoke();
     }

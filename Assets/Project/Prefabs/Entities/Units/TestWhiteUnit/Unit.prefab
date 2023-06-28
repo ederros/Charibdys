@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7408839301984071387}
   - component: {fileID: 8508540762426446927}
   - component: {fileID: 8525337927149964821}
+  - component: {fileID: 1804029673714704405}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -143,16 +144,18 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  selectedColor: {r: 0.35283017, g: 0.8870642, b: 1, a: 0}
+  attack: {fileID: 1804029673714704405}
+  selectedColor: {r: 0.35283017, g: 0.8870642, b: 1, a: 1}
   unselectColor: {r: 0, g: 0, b: 0, a: 0}
   hp:
     id: 0
   myTileMap: {fileID: 0}
+  tileCoord: {x: 0, y: 0}
   armor: 0
   sightRadius: 0
   affiliation: 0
-  turnsPerRound: 0
-  currentTurns: 0
+  turnsPerRound: 10
+  currentTurns: 10
   references:
     version: 1
     00000000:
@@ -162,3 +165,35 @@ MonoBehaviour:
         OnValueChanged:
           m_PersistentCalls:
             m_Calls: []
+        OnValueMax:
+          m_PersistentCalls:
+            m_Calls: []
+        OnValueMin:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 8525337927149964821}
+              m_TargetAssemblyTypeName: EntityBehaviour, Assembly-CSharp
+              m_MethodName: Die
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+--- !u!114 &1804029673714704405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8884705233836037310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd03718578ae8e4dbc0fb4ecbc1d3da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 2
+  turnsRequired: 3

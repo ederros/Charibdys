@@ -1,12 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 using Mirror;
 
 public class EntityBehaviour : NetworkBehaviour
 {
+    protected CommandsInvoker commandsInvoker;
+    public static EntityBehaviour target;
 
+    [SerializeField]
+    AttackBehaviour attack;
+    public AttackBehaviour Attack { get => attack; }
+    
+    [ClientRpc]
+    void RpcSetTarget(){
+        target = this;
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdSetTarget(){
+        RpcSetTarget();
+    }
 
     [SerializeField]
     public Color selectedColor;
@@ -21,6 +37,7 @@ public class EntityBehaviour : NetworkBehaviour
         set{
             if(choosen!=null) OnUnChoose();
             choosen = value;
+            choosen.CmdSetTarget();
             if(choosen!=null) OnChoose();
         }
     }
@@ -34,7 +51,12 @@ public class EntityBehaviour : NetworkBehaviour
     public GameValue hp = new GameValue(100);
 
     public Tilemap myTileMap;
+
+    [SerializeField]
     protected Vector2Int tileCoord = Vector2Int.zero;
+
+    //[ClientRpc]
+    //public void RpcSetTileCoord(Vector2Int newValue)=>TileCoord = newValue;
     public Vector2Int TileCoord{
         get{
             return tileCoord;
@@ -42,6 +64,7 @@ public class EntityBehaviour : NetworkBehaviour
         set{
             tileCoord = value;
             MyTile = myTileMap.GetTile<FloorTile>((Vector3Int)tileCoord);
+            transform.position = myTileMap.CellToWorld((Vector3Int)tileCoord);
         }
     }
     private FloorTile myTile;
@@ -52,6 +75,7 @@ public class EntityBehaviour : NetworkBehaviour
         set{
             if(myTile == value) return;
             if(myTile != null) myTile.OnEntityUnStep(this);
+            
             myTile = value;
             myTile.OnEntityStep(this);
         }
@@ -86,6 +110,10 @@ public class EntityBehaviour : NetworkBehaviour
         }
     }
 
+    public void Die(){
+        Destroy(this.gameObject);
+    }
+
     public bool CheckAffiliation() => PlayersManager.Instance.GetPlayer(affiliation)==PlayerInstanceBehaviour.myInstance; // returns true if this unit affiliates to local player 
 
     void TryChoose(){
@@ -116,6 +144,7 @@ public class EntityBehaviour : NetworkBehaviour
     }
     void Awake()
     {
+        commandsInvoker = new CommandsInvoker(this);
         TileCoord = (Vector2Int)(myTileMap.WorldToCell(transform.position));
         transform.position = myTileMap.CellToWorld((Vector3Int)TileCoord);
         unselectColor = GetComponent<SpriteRenderer>().color;

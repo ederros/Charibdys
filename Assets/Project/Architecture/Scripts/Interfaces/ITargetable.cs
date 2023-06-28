@@ -5,4 +5,5 @@ using UnityEngine;
 public interface ITargetable
 {
     public void Interaction(EntityBehaviour entity);// entity interactes with this
+    
 }
