@@ -66,6 +66,16 @@ public class CursorController : MonoBehaviour
     void Update()
     {
         
+        //beholders check
+        // if(Input.GetMouseButtonDown(0)){
+        //     Vector2Int []vecs = HexManager.GetPositionsInRadius((Vector2Int)tMap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)),4,1);
+        //     foreach (var item in vecs)
+        //     {
+        //         tMap.SetTile((Vector3Int)item,null);
+        //     }
+        // }
+        //end of check
+
         if(PlayerInstanceBehaviour.myInstance == null||!PlayerInstanceBehaviour.myInstance.IsMyTurn) return;
         if(Input.GetMouseButtonDown(0)) lastTile = Vector2Int.zero;
         if(EntityBehaviour.Choosen == null||CommandsInvoker.IsWalking) return;
