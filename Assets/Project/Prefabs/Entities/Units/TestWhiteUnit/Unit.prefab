@@ -197,3 +197,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 2
   turnsRequired: 3
+  attackCount: 1
