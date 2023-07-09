@@ -11,10 +11,16 @@ public class AttackBehaviour: MonoBehaviour
     [SerializeField]
     private uint turnsRequired;
 
+    [SerializeField]
+    private uint attackCount;
+
     public uint TurnsRequired { get => turnsRequired;}
 
     public virtual void Attack(Vector2Int position, Tilemap tMap){
         UnitController target = HexManager.CheckFor<UnitController>(tMap,position);
-        target?.hp.SubValue(damage - target.armor);
+        for(int i = 0; i < attackCount;i++){
+             target?.hp.SubValue(damage - target.armor);
+        }
+       
     }
 }
