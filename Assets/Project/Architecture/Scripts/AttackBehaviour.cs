@@ -21,6 +21,5 @@ public class AttackBehaviour: MonoBehaviour
         for(int i = 0; i < attackCount;i++){
              target?.hp.SubValue(damage - target.armor);
         }
-       
     }
 }

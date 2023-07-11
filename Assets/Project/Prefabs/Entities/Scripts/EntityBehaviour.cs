@@ -7,6 +7,8 @@ using Mirror;
 
 public class EntityBehaviour : NetworkBehaviour
 {
+    [SerializeField]
+    List<SpellSandbox> Abilities;
     protected CommandsInvoker commandsInvoker;
     public static EntityBehaviour target;
 
@@ -83,7 +85,7 @@ public class EntityBehaviour : NetworkBehaviour
     public float armor;
     public int sightRadius;
 
-        public int affiliation;
+    public int affiliation;
 
     private static List<EntityBehaviour> allEntities = new List<EntityBehaviour>();
     [SyncVar]
